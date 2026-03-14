@@ -48,12 +48,31 @@ async def webhook(request: Request):
         send_msg(chat_id, f"Спробуй ще раз, error: {e}")
 
 
+# def send_q_to_ai(text: str) -> str:
+#     rep = genclient.models.generate_content(model="gemini-3-flash-preview", contents=text)
+#     if hasattr(rep, "text") and rep.text:
+#         return rep.text
+#     return "Щось пішло не так"
+
 def send_q_to_ai(text: str) -> str:
-    rep = genclient.models.generate_content(model="gemini-3-flash-preview", contents=text)
+    # Формуємо prompt з роллю, мовою та правилами
+    prompt = (
+        "Ти досвідчений програміст зі стажем 7 років.\n"
+        "Відповідай українською мовою.\n"
+        "Пояснюй максимально просто та доступно.\n"
+        "Якщо не знаєш актуальних даних — не вигадуй.\n\n"
+        f"Запит користувача: {text}"
+    )
+
+    # Виклик до Gemini
+    rep = genclient.models.generate_content(
+        model="gemini-3-flash-preview",
+        contents=prompt
+    )
+
     if hasattr(rep, "text") and rep.text:
         return rep.text
     return "Щось пішло не так"
-
 
 def send_msg(chat_id: int, text: str):
     requests.post(
